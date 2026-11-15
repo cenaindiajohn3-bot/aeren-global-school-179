@@ -8,6 +8,6 @@
 - [x] Verify admin, teacher and student login, submission locking, hidden marks, publication, scheduling and PDF download
 - [x] Provision rstutorials80@gmail.com as Super Admin with a private password-setting invitation
 - [x] Verify administrator role, password validation, and rejection without an invitation
-- [ ] Add Google verification and on-page Super Admin password creation without an email link
-- [ ] Verify on-page setup controls and access checks
+- [x] Add Google verification and on-page Super Admin password creation without an email link
+- [x] Verify on-page setup controls, signed-out access checks, and desktop/mobile layout
 - [ ] Complete real Google verification and password creation — requires the owner to verify their Google account
