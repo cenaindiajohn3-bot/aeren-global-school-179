@@ -6,4 +6,5 @@
 - [x] Student private results and downloadable marksheets
 - [x] Imports, exports, audit history and password changes
 - [x] Verify admin, teacher and student login, submission locking, hidden marks, publication, scheduling and PDF download
-- [ ] Provision the school's first real Super Admin — needs the administrator's school UID and name
+- [ ] Provision rstutorials80@gmail.com as Super Admin with a private password-setting invitation
+- [ ] Verify the invitation password page and administrator role

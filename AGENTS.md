@@ -33,3 +33,4 @@ use the editor.
 - Enforce school permissions and atomic publication with PostgreSQL functions and RLS; privileged account provisioning runs only in authorized server handlers.
 - Map normalized school UIDs to deterministic synthetic email identities; accounts are provisioned confirmed by authorized staff, not public signup.
 - Define all portal visual styles and semantic colors in src/styles.css so navigation, reports and account pages share one design system.
+- School account invitations use Cloud Auth verification on the public password-setting route; role assignment remains privileged and separate from password selection to prevent public privilege escalation.
