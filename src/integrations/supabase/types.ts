@@ -506,6 +506,12 @@ export type Database = {
       portal_snapshot: { Args: never; Returns: Json }
       publish_examination: { Args: { _exam: string }; Returns: Json }
       reopen_sheet: { Args: { _sheet: string }; Returns: undefined }
+      run_scheduled_publication: { Args: { _exam: string }; Returns: undefined }
+      schedule_examination: {
+        Args: { _at: string; _exam: string }
+        Returns: undefined
+      }
+      unpublish_examination: { Args: { _exam: string }; Returns: undefined }
       write_marks: {
         Args: { _entries: Json; _sheet: string; _submit?: boolean }
         Returns: undefined
