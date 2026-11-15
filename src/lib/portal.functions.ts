@@ -51,19 +51,19 @@ export const adminAction=createServerFn({method:'POST'}).middleware([requireSupa
       check(await supabaseAdmin.from('exam_subjects').insert(parsed.assignment_ids.map(assignment_id=>({examination_id:exam.id,assignment_id,max_marks:parsed.max_marks,passing_marks:parsed.passing_marks,allow_decimal:parsed.allow_decimal,allow_exempt:parsed.allow_exempt}))));result=exam;break;
     }
     case 'unpublish': check(await context.supabase.rpc('unpublish_examination',{_exam:z.string().uuid().parse(data.id)}));break;
-    case 'schedule':check(await context.supabase.rpc('schedule_examination',{_exam:z.string().uuid().parse(data.id),_at:z.string().parse(v.at)}));break;
-    case 'archive':check(await supabaseAdmin.from('examinations').update({archived:Boolean(v.archived)}).eq('id',z.string().uuid().parse(data.id)));break;
-    case 'grade':check(await supabaseAdmin.from('examinations').update({grade_rules:z.array(z.object({min:z.number().min(0).max(100),grade:z.string().min(1)})).min(1).parse(v.rules)}).eq('id',z.string().uuid().parse(data.id)));break;
+    case 'schedule':check(await context.supabase.rpc('schedule_examination',{_exam:z.string().uuid().parse(data.id),_at:z.string().parse(v['at'])}));break;
+    case 'archive':check(await supabaseAdmin.from('examinations').update({archived:Boolean(v['archived'])}).eq('id',z.string().uuid().parse(data.id)));break;
+    case 'grade':check(await supabaseAdmin.from('examinations').update({grade_rules:z.array(z.object({min:z.number().min(0).max(100),grade:z.string().min(1)})).min(1).parse(v['rules'])}).eq('id',z.string().uuid().parse(data.id)));break;
     case 'account_update':{
       const parsed=z.object({kind:z.enum(['student','teacher']),full_name:z.string().min(2),active:z.boolean(),section_id:z.string().uuid().optional()}).parse(v);
       const table=parsed.kind==='student'?'students':'teachers';
       const record=check(await supabaseAdmin.from(table).select('profile_id').eq('id',z.string().uuid().parse(data.id)).single()) as {profile_id:string|null};
-      check(await supabaseAdmin.from(table).update({full_name:parsed.full_name,active:parsed.active,...(parsed.kind==='student' && parsed.section_id ? {section_id:parsed.section_id}:{})}).eq('id',data.id??''));
+      if(parsed.kind==='student')check(await supabaseAdmin.from('students').update({full_name:parsed.full_name,active:parsed.active,...(parsed.section_id?{section_id:parsed.section_id}:{})}).eq('id',data.id??''));else check(await supabaseAdmin.from('teachers').update({full_name:parsed.full_name,active:parsed.active}).eq('id',data.id??''));
       if(record.profile_id){check(await supabaseAdmin.from('profiles').update({full_name:parsed.full_name,active:parsed.active}).eq('id',record.profile_id));check(await supabaseAdmin.auth.admin.updateUserById(record.profile_id,{ban_duration:parsed.active?'none':'876000h'}));}break;
     }
-    case 'reset_password':check(await supabaseAdmin.auth.admin.updateUserById(z.string().uuid().parse(data.id),{password:z.string().min(8).parse(v.password)}));break;
+    case 'reset_password':check(await supabaseAdmin.auth.admin.updateUserById(z.string().uuid().parse(data.id),{password:z.string().min(8).parse(v['password'])}));break;
     default:throw new Error('Unsupported administrative action.');
   }
   check(await supabaseAdmin.from('audit_logs').insert({actor_id:context.userId,action:data.action,details:{id:data.id??null}}));
-  return {success:true,result};
+  return {success:true};
 });

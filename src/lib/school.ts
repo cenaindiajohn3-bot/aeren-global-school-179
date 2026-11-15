@@ -1,4 +1,4 @@
-export type Row = { id: string; [key: string]: any };
+export type Row = { id: string; action?: any; active?: any; allow_decimal?: any; allow_exempt?: any; archived?: any; assignment_id?: any; at?: any; class_id?: any; created_at?: any; end_date?: any; exam_subject_id?: any; examination_id?: any; full_name?: any; label?: any; max_marks?: any; name?: any; obtained?: any; passing_marks?: any; password?: any; profile_id?: any; rules?: any; section_id?: any; session_id?: any; start_date?: any; status?: any; student_id?: any; subject_id?: any; submitted?: any; submitted_at?: any; total?: any; uid?: any; [key: string]: any };
 export type Snapshot = { role: string; profile: Row; sessions: Row[]; classes: Row[]; sections: Row[]; subjects: Row[]; students: Row[]; teachers: Row[]; assignments: Row[]; exams: Row[]; sheets: Row[]; marks: Row[]; audit: Row[]; validation?: Record<string, Validation> };
 export type Validation = { total: number; submitted: number; missing: number; invalid: number; students: number; ready: boolean };
 export function uidEmail(uid: string) {
@@ -30,7 +30,7 @@ export function summarize(marks: Row[], sheets: Row[], rules: { min: number; gra
 export function formatDate(date: string | null | undefined) { return date ? new Date(date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '—'; }
 export function downloadCsv(name: string, rows: Record<string, unknown>[]) {
   if (!rows.length) return;
-  const keys = Object.keys(rows[0]);
+  const keys = Object.keys(rows[0] ?? {});
   const escape = (v: unknown) => '"' + String(v ?? '').replace(/^[=+@-]/,'\t$&').replaceAll('"','""') + '"';
   const csv = [keys.map(escape).join(','), ...rows.map(r=>keys.map(k=>escape(r[k])).join(','))].join('\r\n');
   const url = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
