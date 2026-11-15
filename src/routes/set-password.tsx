@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { pageHead } from '@/components/school/portal-page';
 import { passwordError } from '@/lib/password';
+import { lovable } from '@/integrations/lovable/index';
+import { GoogleButton } from '@/components/school/google-button';
 
 export const Route = createFileRoute('/set-password')({
   head: () => pageHead('Set Your Password', 'Choose your private password for your Aeren Global School account.'),
@@ -17,6 +19,31 @@ function SetPassword() {
   const [checking, setChecking] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+
+  async function verifyAccount() {
+    const { data: verified, error: verificationError } = await supabase.auth.getUser();
+    if (verificationError || !verified.user) throw new Error('Please verify your Google account to continue.');
+    const { data: allowed, error: roleError } = await supabase.rpc('has_role', { _user_id: verified.user.id, _role: 'super_admin' });
+    if (roleError || !allowed) throw new Error('This Google account is not an active school Super Admin. Choose your school administrator account.');
+    return verified.user;
+  }
+
+  async function googleVerification() {
+    setBusy(true);
+    setError('');
+    try {
+      const result = await lovable.auth.signInWithOAuth('google', {
+        redirect_uri: `${window.location.origin}/set-password`,
+        extraParams: { prompt: 'select_account' },
+      });
+      if (result.error) throw result.error;
+      if (result.redirected) return;
+      await verifyAccount();
+      setReady(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Google verification could not be completed.');
+    } finally { setBusy(false); }
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -38,9 +65,8 @@ function SetPassword() {
         if (sessionError) throw sessionError;
         const hash = new URLSearchParams(url.hash.slice(1));
         if (hash.get('error_description')) throw new Error(hash.get('error_description') ?? 'Invitation unavailable.');
-        if (!data.session) throw new Error('Open the invitation from your email to choose your password.');
-        const { data: verified, error: verificationError } = await supabase.auth.getUser();
-        if (verificationError || !verified.user) throw new Error('Your invitation has expired. Please request a new invitation.');
+        if (!data.session) return;
+        await verifyAccount();
         window.history.replaceState({}, '', '/set-password');
         if (!cancelled) setReady(true);
       } catch (err) {
@@ -62,6 +88,7 @@ function SetPassword() {
     setError('');
     setBusy(true);
     try {
+      await verifyAccount();
       const { error: updateError } = await supabase.auth.updateUser({ password });
       if (updateError) throw updateError;
       await navigate({ to: '/dashboard' });
@@ -70,15 +97,16 @@ function SetPassword() {
     } finally { setBusy(false); }
   }
 
-  return <div className="auth-form-area"><div className="auth-form">
+  return <div className="auth-form-area password-setup-page"><div className="auth-form">
     <span className="gold-icon"><LockKeyhole size={25}/></span>
     <div className="eyebrow">AEREN GLOBAL SCHOOL</div>
     <h1>Choose your password</h1>
-    {checking ? <p role="status">Verifying your invitation…</p> : ready ? <form onSubmit={save} className="form-grid">
+    {checking ? <p role="status">Checking your account…</p> : ready ? <form onSubmit={save} className="form-grid">
       <label>New password<input name="password" type="password" autoComplete="new-password" minLength={8} required/></label>
       <label>Confirm password<input name="confirmation" type="password" autoComplete="new-password" minLength={8} required/></label>
       {error && <p role="alert" className="form-error">{error}</p>}
       <Button type="submit" disabled={busy}>{busy ? 'Saving…' : 'Save password'}</Button>
-    </form> : <><p role="alert" className="form-error">{error}</p><Link to="/auth" className="back-link">Back to sign in</Link></>}
+    </form> : <>{error && <p role="alert" className="form-error">{error}</p>}<GoogleButton disabled={busy} onClick={() => void googleVerification()}/></>}
+    <Link to="/auth" className="back-link">Back to sign in</Link>
   </div></div>;
 }
