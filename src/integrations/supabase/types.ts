@@ -511,6 +511,7 @@ export type Database = {
         Args: { _at: string; _exam: string }
         Returns: undefined
       }
+      student_subject_names: { Args: never; Returns: Json }
       unpublish_examination: { Args: { _exam: string }; Returns: undefined }
       write_marks: {
         Args: { _entries: Json; _sheet: string; _submit?: boolean }
