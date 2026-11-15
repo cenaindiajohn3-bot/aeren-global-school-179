@@ -64,6 +64,22 @@ export const adminAction=createServerFn({method:'POST'}).middleware([requireSupa
       if(record.profile_id){check(await supabaseAdmin.from('profiles').update({full_name:parsed.full_name,active:parsed.active}).eq('id',record.profile_id));check(await supabaseAdmin.auth.admin.updateUserById(record.profile_id,{ban_duration:parsed.active?'none':'876000h'}));}break;
     }
     case 'reset_password':check(await supabaseAdmin.auth.admin.updateUserById(z.string().uuid().parse(data.id),{password:z.string().min(8).parse(v['password'])}));break;
+    case 'account_delete':{
+      const kind=z.enum(['student','teacher']).parse(v['kind']);
+      const table=kind==='student'?'students':'teachers';
+      const id=z.string().uuid().parse(data.id);
+      const record=check(await supabaseAdmin.from(table).select('profile_id').eq('id',id).single()) as {profile_id:string|null};
+      if(kind==='teacher'){
+        const {count}=await supabaseAdmin.from('teacher_assignments').select('id',{count:'exact',head:true}).eq('teacher_id',id);
+        if(count)throw new Error('This teacher has academic assignments. Deactivate the account to preserve examination history.');
+      }else{
+        const {count}=await supabaseAdmin.from('marks').select('id',{count:'exact',head:true}).eq('student_id',id);
+        if(count)throw new Error('This student has examination records. Deactivate the account to preserve marks.');
+      }
+      check(await supabaseAdmin.from(table).delete().eq('id',id));
+      if(record.profile_id)check(await supabaseAdmin.auth.admin.deleteUser(record.profile_id));
+      break;
+    }
     default:throw new Error('Unsupported administrative action.');
   }
   check(await supabaseAdmin.from('audit_logs').insert({actor_id:context.userId,action:data.action,details:{id:data.id??null}}));
