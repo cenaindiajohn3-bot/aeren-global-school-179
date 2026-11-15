@@ -6,6 +6,8 @@ import { uidEmail } from './school';
 export const loadPortal = createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).handler(async({context})=>{
   const {data,error}=await context.supabase.rpc('portal_snapshot');
   if(error) throw new Error(error.message);
+  const {data:names,error:nameError}=await context.supabase.rpc("student_subject_names");if(nameError)throw new Error(nameError.message);
+  const snapshot=data as unknown as {sheets:{id:string;subject_name?:string}[]};const map=names as Record<string,string>;for(const sheet of snapshot.sheets)sheet.subject_name=map[sheet.id]??"Subject";
   return data;
 });
 const accountSchema=z.object({kind:z.enum(['student','teacher']),uid:z.string(),full_name:z.string().min(2),password:z.string().min(8),section_id:z.string().uuid().optional(),session_id:z.string().uuid().optional()});
