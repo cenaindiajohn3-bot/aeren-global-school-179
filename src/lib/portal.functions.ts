@@ -39,7 +39,7 @@ export const adminAction=createServerFn({method:'POST'}).middleware([requireSupa
   let result: unknown;
   const check=(r:{error: {message:string}|null;data?:unknown})=>{if(r.error)throw new Error(r.error.message);return r.data;};
   switch(data.action){
-    case 'class': result=check(await supabaseAdmin.from('classes').insert(z.object({name:z.string().min(2),level:z.coerce.number().int().min(3).max(10)}).parse(v)).select());break;
+    case 'class': result=check(await supabaseAdmin.from('classes').insert(z.object({name:z.string().min(2),level:z.coerce.number().int().min(1).max(10)}).parse(v)).select());break;
     case 'section':result=check(await supabaseAdmin.from('sections').insert(z.object({name:z.string().min(1),class_id:z.string().uuid()}).parse(v)));break;
     case 'subject':result=check(await supabaseAdmin.from('subjects').insert(z.object({name:z.string().min(2),code:z.string().min(1)}).parse(v)));break;
     case 'session':result=check(await supabaseAdmin.from('academic_sessions').insert(z.object({name:z.string().min(4)}).parse(v)));break;
