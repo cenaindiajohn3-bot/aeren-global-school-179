@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import { z } from 'zod';
 import { uidEmail } from './school';
+import { canManageSchoolAccounts } from './account-permissions';
 
 export const loadPortal = createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).handler(async({context})=>{
   const {data,error}=await context.supabase.rpc('portal_snapshot');
@@ -12,10 +13,8 @@ export const loadPortal = createServerFn({method:'POST'}).middleware([requireSup
 });
 const accountSchema=z.object({kind:z.enum(['student','teacher']),uid:z.string(),full_name:z.string().min(2),password:z.string().min(8),section_id:z.string().uuid().optional(),session_id:z.string().uuid().optional()});
 export const createAccount=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(accountSchema).handler(async({data,context})=>{
-  const {data:admin}=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'super_admin'});
-  const {data:teacher}=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'teacher'});
-  if(!admin && !(teacher && data.kind==='student' && data.section_id)) throw new Error('Only an administrator or assigned teacher can create this account.');
-  if(!admin && data.section_id){const {data:allowed}=await context.supabase.rpc('is_assigned',{_section:data.section_id}); if(!allowed) throw new Error('Class not assigned to you.');}
+   const {data:admin,error:roleError}=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'super_admin'});
+   if(roleError || !canManageSchoolAccounts(admin)) throw new Error('Only Super Admin can create school UIDs and passwords.');
   if(data.kind==='student' && (!data.section_id || !data.session_id)) throw new Error('Class and academic session are required.');
   const email=uidEmail(data.uid);
   const {supabaseAdmin}=await import('@/integrations/supabase/client.server');
