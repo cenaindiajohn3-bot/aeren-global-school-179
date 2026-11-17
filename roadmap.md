@@ -1,5 +1,5 @@
 # School examination portal
-- [ ] Restrict teacher/student UID creation and password management to Super Admin and verify permissions
+- [x] Restrict teacher/student UID creation and portal password controls to Super Admin; verify admin creation and direct teacher/student rejection
 - [x] Cloud schema, role permissions, account provisioning and UID login
 - [x] Admin dashboard and management pages
 - [x] Teacher marks entry, validation and submission locking
