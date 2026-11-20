@@ -1,4 +1,5 @@
 # School examination portal
+- [ ] Verify clear exam guidance when teacher assignments or selected class subjects are missing
 - [x] Replace the public demo dashboard with Student, Teacher and Admin login choices and role-specific post-login content
 - [x] Restrict teacher/student UID creation and portal password controls to Super Admin; verify admin creation and direct teacher/student rejection
 - [x] Cloud schema, role permissions, account provisioning and UID login

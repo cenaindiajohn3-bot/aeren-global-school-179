@@ -3,6 +3,7 @@ import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import { z } from 'zod';
 import { uidEmail } from './school';
 import { canManageSchoolAccounts } from './account-permissions';
+import { requireExamAssignments } from './exam-validation';
 
 export const loadPortal = createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).handler(async({context})=>{
   const {data,error}=await context.supabase.rpc('portal_snapshot');
@@ -45,6 +46,7 @@ export const adminAction=createServerFn({method:'POST'}).middleware([requireSupa
     case 'session':result=check(await supabaseAdmin.from('academic_sessions').insert(z.object({name:z.string().min(4)}).parse(v)));break;
     case 'assignment':result=check(await supabaseAdmin.from('teacher_assignments').insert(z.object({teacher_id:z.string().uuid(),section_id:z.string().uuid(),subject_id:z.string().uuid()}).parse(v)));break;
     case 'exam':{
+      requireExamAssignments(Array.isArray(v['assignment_ids']) ? v['assignment_ids'] : []);
       const parsed=z.object({name:z.string().min(2),session_id:z.string().uuid(),start_date:z.string(),end_date:z.string(),max_marks:z.coerce.number().positive(),passing_marks:z.coerce.number().nonnegative(),allow_decimal:z.boolean().default(false),allow_exempt:z.boolean().default(false),assignment_ids:z.array(z.string().uuid()).min(1)}).parse(v);
       if(parsed.passing_marks>parsed.max_marks || parsed.end_date<parsed.start_date)throw new Error('Check passing marks and exam dates.');
       const {data:exam,error}=await supabaseAdmin.from('examinations').insert({name:parsed.name,session_id:parsed.session_id,start_date:parsed.start_date,end_date:parsed.end_date}).select().single();

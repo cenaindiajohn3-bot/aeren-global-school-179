@@ -35,3 +35,4 @@ use the editor.
 - Define all portal visual styles and semantic colors in src/styles.css so navigation, reports and account pages share one design system.
 - Super Admin password setup uses the managed Google broker returning to the public password page; validate the authenticated active school role before showing the form, and never assign roles from OAuth email or client state.
 - Account provisioning must authorize the active role before loading the privileged client; share fail-closed permission helpers with tests to prevent UI/server drift.
+- Share exam subject-selection validation between the form and server action so empty selections fail clearly before any examination is created.
