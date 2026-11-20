@@ -29,7 +29,7 @@ use the editor.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
 
-- Keep school workflows on separate authenticated TanStack routes with a shared portal shell; public home exposes demo aggregates only.
+- Keep school workflows on separate authenticated TanStack routes with a shared portal shell; public home and auth share a role-choice login screen, and verified school roles determine post-login content, so login choices cannot grant access.
 - Enforce school permissions and atomic publication with PostgreSQL functions and RLS; privileged account provisioning runs only in authorized server handlers.
 - Map normalized school UIDs to deterministic synthetic email identities; accounts are provisioned confirmed by authorized staff, not public signup.
 - Define all portal visual styles and semantic colors in src/styles.css so navigation, reports and account pages share one design system.

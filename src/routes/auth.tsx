@@ -1,13 +1,14 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { useState } from 'react';
-import { GraduationCap, ArrowRight, ShieldCheck, LockKeyhole } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
-import { uidEmail } from '@/lib/school';
+import { createFileRoute } from '@tanstack/react-router';
+import { LoginPage } from '@/components/school/login-page';
 import { pageHead } from '@/components/school/portal-page';
-import study from '@/assets/school-study.jpg';
-export const Route=createFileRoute('/auth')({head:()=>pageHead('School Sign In','Sign in to Aeren Global School using your school UID and password.'),component:Auth});
-function Auth(){const [role,setRole]=useState('Student');const [busy,setBusy]=useState(false);const [error,setError]=useState('');const [forgot,setForgot]=useState(false);const navigate=useNavigate();
- async function submit(e:React.FormEvent<HTMLFormElement>){e.preventDefault();setError('');setBusy(true);const f=new FormData(e.currentTarget);try{const uid=String(f.get('uid'));const {error}=await supabase.auth.signInWithPassword({email:uid.includes('@')?uid:uidEmail(uid),password:String(f.get('password'))});if(error)throw error;await navigate({to:'/dashboard'});}catch(err){setError(err instanceof Error?err.message:'Unable to sign in.');}finally{setBusy(false);}}
- return <div className="auth-page"><div className="auth-photo"><img src={study} alt="School study notebooks" width={1536} height={1024}/><Link to="/" className="auth-brand"><GraduationCap size={34}/><span>AEREN GLOBAL SCHOOL</span></Link><div className="auth-photo-copy"><span>EXAMINATION & RESULT PORTAL</span><h1>Aeren Global School</h1><p>Every student’s progress.<br/>In one secure school workspace.</p><small>Poonam Sagar Complex, Mira Road East, Maharashtra.</small></div></div><div className="auth-form-area"><Link to="/" className="back-link">← Back to overview</Link><div className="auth-form"><span className="gold-icon"><LockKeyhole size={25}/></span><div className="eyebrow">WELCOME TO YOUR SCHOOL WORKSPACE</div><h2>Sign in to your account</h2><p>Enter your school-issued UID and password.</p><div className="role-tabs">{['Student','Teacher','Super Admin'].map(r=><Button key={r} type="button" variant={role===r?'default':'ghost'} onClick={()=>setRole(r)}>{r}</Button>)}</div>{forgot?<div className="password-help"><h3>Forgot your password?</h3><p>Contact your school administrator with your UID. They can securely reset your password.</p><Button variant="outline" onClick={()=>setForgot(false)}>Back to sign in</Button></div>:<form onSubmit={submit} className="form-grid"><label>{role==='Student'?'Student UID':'School username or email'}<input name="uid" autoComplete="username" placeholder={role==='Student'?'Enter your student UID':'Enter your school username'} required/></label><label>Password<input name="password" type="password" autoComplete="current-password" placeholder="Enter your password" minLength={8} required/></label><Button type="button" variant="link" className="forgot-button" onClick={()=>setForgot(true)}>Forgot password?</Button>{error&&<p role="alert" className="form-error">{error}</p>}<Button type="submit" size="lg" disabled={busy}>{busy?'Signing in…':'Sign in'}<ArrowRight/></Button></form>}{role==='Super Admin'&&<Link to="/set-password" className="admin-password-link">Create my password with Google</Link>}<div className="auth-security"><ShieldCheck size={16}/> Secure access · School-issued accounts only</div></div><small className="auth-copyright">© 2026 Aeren Global School. All rights reserved.</small></div></div>;
+
+export const Route = createFileRoute('/auth')({
+  validateSearch: (search: Record<string, unknown>): { role?: string } => ({ role: ['student', 'teacher', 'admin'].includes(String(search['role'])) ? String(search['role']) : undefined }),
+  head: () => pageHead('Account Sign In', 'Sign in to your student, teacher or admin account at Aeren Global School.'),
+  component: Auth,
+});
+
+function Auth() {
+  const { role } = Route.useSearch();
+  return <LoginPage key={role} initialRole={role}/>;
 }
