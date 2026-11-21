@@ -20,6 +20,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedExaminationsRouteImport } from './routes/_authenticated/examinations'
 import { Route as AuthenticatedMarksRouteImport } from './routes/_authenticated/marks'
 import { Route as AuthenticatedPublicationRouteImport } from './routes/_authenticated/publication'
+import { Route as AuthenticatedPyqsRouteImport } from './routes/_authenticated/pyqs'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedStudentsRouteImport } from './routes/_authenticated/students'
@@ -83,6 +84,11 @@ const AuthenticatedPublicationRoute =
     path: '/publication',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPyqsRoute = AuthenticatedPyqsRouteImport.update({
+  id: '/pyqs',
+  path: '/pyqs',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/examinations': typeof AuthenticatedExaminationsRoute
   '/marks': typeof AuthenticatedMarksRoute
   '/publication': typeof AuthenticatedPublicationRoute
+  '/pyqs': typeof AuthenticatedPyqsRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/students': typeof AuthenticatedStudentsRoute
@@ -137,6 +144,7 @@ export interface FileRoutesByTo {
   '/examinations': typeof AuthenticatedExaminationsRoute
   '/marks': typeof AuthenticatedMarksRoute
   '/publication': typeof AuthenticatedPublicationRoute
+  '/pyqs': typeof AuthenticatedPyqsRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/students': typeof AuthenticatedStudentsRoute
@@ -156,6 +164,7 @@ export interface FileRoutesById {
   '/_authenticated/examinations': typeof AuthenticatedExaminationsRoute
   '/_authenticated/marks': typeof AuthenticatedMarksRoute
   '/_authenticated/publication': typeof AuthenticatedPublicationRoute
+  '/_authenticated/pyqs': typeof AuthenticatedPyqsRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/students': typeof AuthenticatedStudentsRoute
@@ -175,6 +184,7 @@ export interface FileRouteTypes {
     | '/examinations'
     | '/marks'
     | '/publication'
+    | '/pyqs'
     | '/reports'
     | '/settings'
     | '/students'
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/examinations'
     | '/marks'
     | '/publication'
+    | '/pyqs'
     | '/reports'
     | '/settings'
     | '/students'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/_authenticated/examinations'
     | '/_authenticated/marks'
     | '/_authenticated/publication'
+    | '/_authenticated/pyqs'
     | '/_authenticated/reports'
     | '/_authenticated/settings'
     | '/_authenticated/students'
@@ -303,6 +315,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPublicationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/pyqs': {
+      id: '/_authenticated/pyqs'
+      path: '/pyqs'
+      fullPath: '/pyqs'
+      preLoaderRoute: typeof AuthenticatedPyqsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/reports': {
       id: '/_authenticated/reports'
       path: '/reports'
@@ -349,6 +368,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedExaminationsRoute: typeof AuthenticatedExaminationsRoute
   AuthenticatedMarksRoute: typeof AuthenticatedMarksRoute
   AuthenticatedPublicationRoute: typeof AuthenticatedPublicationRoute
+  AuthenticatedPyqsRoute: typeof AuthenticatedPyqsRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedStudentsRoute: typeof AuthenticatedStudentsRoute
@@ -364,6 +384,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedExaminationsRoute: AuthenticatedExaminationsRoute,
   AuthenticatedMarksRoute: AuthenticatedMarksRoute,
   AuthenticatedPublicationRoute: AuthenticatedPublicationRoute,
+  AuthenticatedPyqsRoute: AuthenticatedPyqsRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedStudentsRoute: AuthenticatedStudentsRoute,

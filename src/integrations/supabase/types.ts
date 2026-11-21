@@ -292,6 +292,61 @@ export type Database = {
         }
         Relationships: []
       }
+      pyqs: {
+        Row: {
+          class_id: string
+          created_at: string
+          file_path: string
+          id: string
+          subject_id: string
+          title: string
+          uploaded_by: string
+          year: number
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          file_path: string
+          id?: string
+          subject_id: string
+          title: string
+          uploaded_by: string
+          year: number
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          file_path?: string
+          id?: string
+          subject_id?: string
+          title?: string
+          uploaded_by?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pyqs_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pyqs_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pyqs_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sections: {
         Row: {
           class_id: string
@@ -492,7 +547,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_read_pyq_file: { Args: { _path: string }; Returns: boolean }
       can_read_sheet: { Args: { _sheet: string }; Returns: boolean }
+      can_upload_pyq: {
+        Args: { _class: string; _subject: string }
+        Returns: boolean
+      }
       demo_overview: { Args: never; Returns: Json }
       exam_validation: { Args: { _exam: string }; Returns: Json }
       has_role: {

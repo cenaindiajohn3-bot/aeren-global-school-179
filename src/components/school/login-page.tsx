@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { uidEmail } from '@/lib/school';
 import study from '@/assets/school-study.jpg';
+import { useQueryClient } from '@tanstack/react-query';
+import { schoolWorkspace } from '@/lib/login-access';
 
 const choices = [
   { role: 'student', label: 'Student', icon: GraduationCap },
@@ -18,6 +20,7 @@ export function LoginPage({ initialRole = '' }: { initialRole?: string }) {
   const [error, setError] = useState('');
   const [forgot, setForgot] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -31,8 +34,15 @@ export function LoginPage({ initialRole = '' }: { initialRole?: string }) {
         password: String(values.get('password') ?? ''),
       });
       if (signInError) throw signInError;
-      // The verified school role, not the chosen login label, determines the workspace.
-      await navigate({ to: '/dashboard' });
+      const { data: snapshot, error: accountError } = await supabase.rpc('portal_snapshot');
+      if (accountError) {
+        await supabase.auth.signOut();
+        throw new Error('No active school account assigned. Contact your school administrator.');
+      }
+      const role = (snapshot as unknown as { role: string }).role;
+      const destination = schoolWorkspace(role);
+      queryClient.clear();
+      await navigate({ to: destination });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to sign in.');
     } finally { setBusy(false); }

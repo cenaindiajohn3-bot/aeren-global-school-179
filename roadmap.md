@@ -1,4 +1,7 @@
 # School examination portal
+- [ ] Test Student, Teacher and Admin sign-in, refresh, sign-out and access restrictions; fix issues
+- [ ] Add private PYQs by class, subject and year with upload and download
+- [ ] Allow Admin uploads and teacher uploads for assigned class subjects
 - [ ] Verify clear exam guidance when teacher assignments or selected class subjects are missing
 - [x] Replace the public demo dashboard with Student, Teacher and Admin login choices and role-specific post-login content
 - [x] Restrict teacher/student UID creation and portal password controls to Super Admin; verify admin creation and direct teacher/student rejection
