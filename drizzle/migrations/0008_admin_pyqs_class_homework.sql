@@ -1,0 +1,13 @@
+ALTER POLICY pyqs_insert ON public.pyqs WITH CHECK(uploaded_by=auth.uid() AND public.has_role(auth.uid(),'super_admin') AND file_path LIKE auth.uid()::text||'/%');
+ALTER POLICY pyqs_delete ON public.pyqs USING(public.has_role(auth.uid(),'super_admin'));
+ALTER POLICY pyq_files_insert ON storage.objects WITH CHECK(bucket_id='school-pyqs' AND public.has_role(auth.uid(),'super_admin') AND (storage.foldername(name))[1]=auth.uid()::text AND lower(storage.extension(name))='pdf');
+ALTER POLICY pyq_files_delete ON storage.objects USING(bucket_id='school-pyqs' AND public.has_role(auth.uid(),'super_admin'));
+ALTER POLICY pyq_files_read ON storage.objects USING(bucket_id='school-pyqs' AND (public.has_role(auth.uid(),'super_admin') OR public.can_read_pyq_file(name)));
+CREATE TABLE public.homework (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), title text NOT NULL CHECK(length(trim(title)) BETWEEN 2 AND 150), instructions text NOT NULL DEFAULT '' CHECK(length(instructions)<=3000), section_id uuid NOT NULL REFERENCES public.sections(id), subject_id uuid NOT NULL REFERENCES public.subjects(id), due_date date NOT NULL, created_by uuid NOT NULL REFERENCES public.profiles(id), created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT,INSERT,DELETE ON public.homework TO authenticated;
+GRANT ALL ON public.homework TO service_role;
+ALTER TABLE public.homework ENABLE ROW LEVEL SECURITY;
+CREATE FUNCTION public.teaches(_section uuid,_subject uuid) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$ SELECT public.has_role(auth.uid(),'teacher') AND EXISTS(SELECT 1 FROM public.teacher_assignments a JOIN public.teachers t ON t.id=a.teacher_id WHERE t.profile_id=auth.uid() AND t.active AND a.section_id=_section AND a.subject_id=_subject) $$;
+CREATE POLICY homework_read ON public.homework FOR SELECT TO authenticated USING(public.has_role(auth.uid(),'super_admin') OR public.teaches(section_id,subject_id) OR (public.has_role(auth.uid(),'student') AND EXISTS(SELECT 1 FROM public.students s WHERE s.profile_id=auth.uid() AND s.active AND s.section_id=homework.section_id)));
+CREATE POLICY homework_insert ON public.homework FOR INSERT TO authenticated WITH CHECK(created_by=auth.uid() AND (public.has_role(auth.uid(),'super_admin') OR public.teaches(section_id,subject_id)));
+CREATE POLICY homework_delete ON public.homework FOR DELETE TO authenticated USING(public.has_role(auth.uid(),'super_admin') OR (created_by=auth.uid() AND public.teaches(section_id,subject_id)));

@@ -1,11 +1,9 @@
 import { expect, it } from 'vitest';
 import { canUploadPyqs, validatePyqFile } from '../lib/pyqs';
-it('allows Admin and teacher uploads', () => {
-  expect(canUploadPyqs('super_admin')).toBe(true);
-  expect(canUploadPyqs('teacher')).toBe(true);
-});
-it('denies student and unassigned uploads', () => {
+it('allows Admin to add and delete papers', () => expect(canUploadPyqs('super_admin')).toBe(true));
+it('denies student, teacher and unassigned uploads', () => {
   expect(canUploadPyqs('student')).toBe(false);
+  expect(canUploadPyqs('teacher')).toBe(false);
   expect(canUploadPyqs('')).toBe(false);
 });
 it('accepts PDF files at the 10 MB limit', () => expect(() => validatePyqFile({ name: 'paper.pdf', size: 10485760 })).not.toThrow());

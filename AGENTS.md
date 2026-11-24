@@ -36,5 +36,6 @@ use the editor.
 - Super Admin password setup uses the managed Google broker returning to the public password page; validate the authenticated active school role before showing the form, and never assign roles from OAuth email or client state.
 - Account provisioning must authorize the active role before loading the privileged client; share fail-closed permission helpers with tests to prevent UI/server drift.
 - Share exam subject-selection validation between the form and server action so empty selections fail clearly before any examination is created.
-- PYQs use a separate authenticated page and private storage with RLS scoped to enrolled classes, teacher assignments and verified administrators, so file links cannot bypass school access.
+- PYQs use a separate authenticated page and private storage; RLS limits writes to verified administrators and reads to enrolled classes and teacher assignments, so file links cannot bypass school access.
+- Class assignments (homework) use their own authenticated page; RLS lets teachers write only for class subjects they teach and limits student reads to their enrolled section.
 - Resolve the active school role after password sign-in before navigation, and clear cached school data on identity transitions to prevent cross-account stale views.

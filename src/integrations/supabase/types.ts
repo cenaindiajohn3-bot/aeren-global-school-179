@@ -190,6 +190,61 @@ export type Database = {
           },
         ]
       }
+      homework: {
+        Row: {
+          created_at: string
+          created_by: string
+          due_date: string
+          id: string
+          instructions: string
+          section_id: string
+          subject_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          due_date: string
+          id?: string
+          instructions?: string
+          section_id: string
+          subject_id: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          due_date?: string
+          id?: string
+          instructions?: string
+          section_id?: string
+          subject_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "homework_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "homework_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "sections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "homework_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marks: {
         Row: {
           exam_subject_id: string
@@ -572,6 +627,10 @@ export type Database = {
         Returns: undefined
       }
       student_subject_names: { Args: never; Returns: Json }
+      teaches: {
+        Args: { _section: string; _subject: string }
+        Returns: boolean
+      }
       unpublish_examination: { Args: { _exam: string }; Returns: undefined }
       write_marks: {
         Args: { _entries: Json; _sheet: string; _submit?: boolean }

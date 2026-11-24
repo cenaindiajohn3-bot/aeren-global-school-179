@@ -18,6 +18,7 @@ import { Route as AuthenticatedAuditRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedClassesRouteImport } from './routes/_authenticated/classes'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedExaminationsRouteImport } from './routes/_authenticated/examinations'
+import { Route as AuthenticatedHomeworkRouteImport } from './routes/_authenticated/homework'
 import { Route as AuthenticatedMarksRouteImport } from './routes/_authenticated/marks'
 import { Route as AuthenticatedPublicationRouteImport } from './routes/_authenticated/publication'
 import { Route as AuthenticatedPyqsRouteImport } from './routes/_authenticated/pyqs'
@@ -73,6 +74,11 @@ const AuthenticatedExaminationsRoute =
     path: '/examinations',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedHomeworkRoute = AuthenticatedHomeworkRouteImport.update({
+  id: '/homework',
+  path: '/homework',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMarksRoute = AuthenticatedMarksRouteImport.update({
   id: '/marks',
   path: '/marks',
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/classes': typeof AuthenticatedClassesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/examinations': typeof AuthenticatedExaminationsRoute
+  '/homework': typeof AuthenticatedHomeworkRoute
   '/marks': typeof AuthenticatedMarksRoute
   '/publication': typeof AuthenticatedPublicationRoute
   '/pyqs': typeof AuthenticatedPyqsRoute
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/classes': typeof AuthenticatedClassesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/examinations': typeof AuthenticatedExaminationsRoute
+  '/homework': typeof AuthenticatedHomeworkRoute
   '/marks': typeof AuthenticatedMarksRoute
   '/publication': typeof AuthenticatedPublicationRoute
   '/pyqs': typeof AuthenticatedPyqsRoute
@@ -162,6 +170,7 @@ export interface FileRoutesById {
   '/_authenticated/classes': typeof AuthenticatedClassesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/examinations': typeof AuthenticatedExaminationsRoute
+  '/_authenticated/homework': typeof AuthenticatedHomeworkRoute
   '/_authenticated/marks': typeof AuthenticatedMarksRoute
   '/_authenticated/publication': typeof AuthenticatedPublicationRoute
   '/_authenticated/pyqs': typeof AuthenticatedPyqsRoute
@@ -182,6 +191,7 @@ export interface FileRouteTypes {
     | '/classes'
     | '/dashboard'
     | '/examinations'
+    | '/homework'
     | '/marks'
     | '/publication'
     | '/pyqs'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/classes'
     | '/dashboard'
     | '/examinations'
+    | '/homework'
     | '/marks'
     | '/publication'
     | '/pyqs'
@@ -219,6 +230,7 @@ export interface FileRouteTypes {
     | '/_authenticated/classes'
     | '/_authenticated/dashboard'
     | '/_authenticated/examinations'
+    | '/_authenticated/homework'
     | '/_authenticated/marks'
     | '/_authenticated/publication'
     | '/_authenticated/pyqs'
@@ -301,6 +313,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedExaminationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/homework': {
+      id: '/_authenticated/homework'
+      path: '/homework'
+      fullPath: '/homework'
+      preLoaderRoute: typeof AuthenticatedHomeworkRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/marks': {
       id: '/_authenticated/marks'
       path: '/marks'
@@ -366,6 +385,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedClassesRoute: typeof AuthenticatedClassesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedExaminationsRoute: typeof AuthenticatedExaminationsRoute
+  AuthenticatedHomeworkRoute: typeof AuthenticatedHomeworkRoute
   AuthenticatedMarksRoute: typeof AuthenticatedMarksRoute
   AuthenticatedPublicationRoute: typeof AuthenticatedPublicationRoute
   AuthenticatedPyqsRoute: typeof AuthenticatedPyqsRoute
@@ -382,6 +402,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedClassesRoute: AuthenticatedClassesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedExaminationsRoute: AuthenticatedExaminationsRoute,
+  AuthenticatedHomeworkRoute: AuthenticatedHomeworkRoute,
   AuthenticatedMarksRoute: AuthenticatedMarksRoute,
   AuthenticatedPublicationRoute: AuthenticatedPublicationRoute,
   AuthenticatedPyqsRoute: AuthenticatedPyqsRoute,
