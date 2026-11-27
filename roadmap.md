@@ -1,9 +1,9 @@
 # School examination portal
-- [ ] Make PYQ add/delete Admin-only; students view only
-- [ ] Add class assignments posted by teachers, visible only to that class's students
+- [x] Make PYQ add/delete Admin-only; students view only
+- [x] Add class assignments posted by teachers, visible only to that class's students
 - [ ] Test Student, Teacher and Admin sign-in, refresh, sign-out and access restrictions; fix issues
-- [ ] Add private PYQs by class, subject and year with upload and download
-- [ ] Allow Admin uploads and teacher uploads for assigned class subjects
+- [x] Add private PYQs by class, subject and year with upload and download
+- [x] Keep PYQ add/delete Admin-only; teachers and students can view/download authorized papers
 - [ ] Verify clear exam guidance when teacher assignments or selected class subjects are missing
 - [x] Replace the public demo dashboard with Student, Teacher and Admin login choices and role-specific post-login content
 - [x] Restrict teacher/student UID creation and portal password controls to Super Admin; verify admin creation and direct teacher/student rejection
